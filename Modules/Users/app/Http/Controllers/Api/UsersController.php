@@ -5,18 +5,18 @@ namespace Modules\Users\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Service\HelperResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Bus;
 use Modules\Users\Http\Requests\Api\StoreUserRequest;
-use Modules\Users\Jobs\RecordOnboardingActivity;
-use Modules\Users\Jobs\SendUserCreatedNotification;
-use Modules\Users\Jobs\UpdateDailyOnboardingStats;
+use Modules\Users\Http\Requests\Api\UpdateUserRequest;
 use Modules\Users\Models\User;
 use Modules\Users\Transformers\UserResource;
+use Modules\Users\Services\UserService;
 use OpenApi\Attributes as OA;
 
 
 class UsersController extends Controller
 {
+    public function __construct(public UserService $userService){}
+
     #[OA\Post(
         path: '/v1/users',
         tags: ['Users'],
@@ -39,20 +39,8 @@ class UsersController extends Controller
     )]
     public function store(StoreUserRequest $request)
     {       
-        $user = User::create($request->validated());
-
-        Bus::chain([
-            new SendUserCreatedNotification($user),
-            new RecordOnboardingActivity($user),
-            new UpdateDailyOnboardingStats($user),
-        ])->catch(function (\Throwable $e) use ($user) {
-            logger()->error('User onboarding chain failed', [
-                'user_id' => $user->id,
-                'error'   => $e->getMessage(),
-            ]);
-        })->dispatch();
-
-        return HelperResponse::success(new UserResource($user), 'User created successfully', 201);
+        $user = $this->userService->store($request->validated());
+        return HelperResponse::success(new UserResource($user) , 'User created successfully', 201);
     }
 
     #[OA\Get(
@@ -92,8 +80,8 @@ class UsersController extends Controller
             new OA\Response(response: 404, description: 'Not found'),
         ]
     )]
-    public function update(Request $request, User $user) {
-        $user->update($request->validated());
+    public function update(UpdateUserRequest $request, User $user) {
+        $user = $this->userService->update($request->validated(), $user);
         return HelperResponse::success(new UserResource($user), 'User updated successfully');
     }
 
@@ -110,7 +98,7 @@ class UsersController extends Controller
         ]
     )]
     public function destroy(User $user) {
-        $user->delete();
-        return HelperResponse::success(null, 'User deleted successfully');
+        $user = $this->userService->destroy($user);
+        return HelperResponse::success(new UserResource($user), 'User deleted successfully');
     }
 }

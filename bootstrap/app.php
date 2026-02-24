@@ -8,7 +8,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -29,8 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 $exception instanceof AuthenticationException => HelperResponse::error('Unauthenticated', 401),
                 $exception instanceof AuthorizationException  => HelperResponse::error('Forbidden', 403),
                 $exception instanceof ModelNotFoundException  => HelperResponse::error('Not Found', 404),
-                $exception instanceof ValidationException     => HelperResponse::error($exception->validator->errors()->first(), 422),
-                default                                       => HelperResponse::error('Internal Server Error', 500),
+                default                                       => HelperResponse::error($exception->getMessage(), 500),
             };
         });
     })->create();

@@ -7,6 +7,10 @@ use App\Http\Requests\BaseApiRequest;
 
 class UpdateUserRequest extends BaseApiRequest
 {
+    public function authorize(): bool
+    {
+        return true;
+    }
     /**
      * Get the validation rules that apply to the request.
      */
@@ -14,7 +18,7 @@ class UpdateUserRequest extends BaseApiRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email' . $this->user->id,
+            'email' => 'required|email|unique:users,email,' . $this->user->id,
             'password' => 'sometimes|string|min:8',
         ];
     }

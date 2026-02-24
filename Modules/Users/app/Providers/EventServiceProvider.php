@@ -3,6 +3,10 @@
 namespace Modules\Users\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Modules\Users\Events\UserCreated;
+use Modules\Users\Listeners\LogActivityListener;
+use Modules\Users\Listeners\UpdateDailyStatsListener;
+use Modules\Users\Listeners\WelcomeMessageListener;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -11,7 +15,13 @@ class EventServiceProvider extends ServiceProvider
      *
      * @var array<string, array<int, string>>
      */
-    protected $listen = [];
+    protected $listen = [
+        UserCreated::class => [
+            LogActivityListener::class,
+            UpdateDailyStatsListener::class,
+            WelcomeMessageListener::class,
+        ]
+    ];
 
     /**
      * Indicates if events should be discovered.
