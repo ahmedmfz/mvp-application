@@ -11,7 +11,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Modules\User\Models\User;
 
-class UserCreated
+class UserDeleted
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 

@@ -1,13 +1,13 @@
 <?php
 
-namespace Modules\User\Providers;
+namespace Modules\Activity\Providers;
 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
-    protected string $name = 'User';
+    protected string $name = 'Activity';
 
     /**
      * Called before routes are registered.
@@ -45,8 +45,6 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapApiRoutes(): void
     {
-        Route::middleware('api')
-          ->prefix('api/v1')->group(module_path('User', '/routes/api/v1.php'));
+        Route::middleware('api')->prefix('api')->name('api.')->group(module_path($this->name, '/routes/api.php'));
     }
-
 }

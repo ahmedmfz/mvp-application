@@ -21,7 +21,7 @@ class WelcomeMessageListener implements ShouldQueue
      * Handle the event.
      */
     public function handle(UserCreated $event): void {
-        Log::info('Welcome Message Listener', ['user' => $event->user]);
+        Log::info('Welcome Message Listener', ['user' => $event->userId]);
 
         // we will send a welcome message to the user
     }

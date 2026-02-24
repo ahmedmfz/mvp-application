@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\User\Providers;
+namespace Modules\Activity\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
@@ -8,13 +8,13 @@ use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
-class UsersServiceProvider extends ServiceProvider
+class ActivityServiceProvider extends ServiceProvider
 {
     use PathNamespace;
 
-    protected string $name = 'User';
+    protected string $name = 'Activity';
 
-    protected string $nameLower = 'user';
+    protected string $nameLower = 'activity';
 
     /**
      * Boot the application events.
@@ -34,8 +34,8 @@ class UsersServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->register(\Modules\User\Providers\EventServiceProvider::class);
-        $this->app->register(\Modules\User\Providers\RouteServiceProvider::class);
+        $this->app->register(EventServiceProvider::class);
+        $this->app->register(RouteServiceProvider::class);
     }
 
     /**
