@@ -18,7 +18,7 @@
                     "Users"
                 ],
                 "summary": "Create a new user",
-                "operationId": "4327e9a60d7caa219617e44a34d8a235",
+                "operationId": "046a3cad925a1ed6862a6dd2f46b8d5f",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -66,7 +66,7 @@
                     "Users"
                 ],
                 "summary": "Get a user by ID",
-                "operationId": "6d561bcf167bb0de49c1c77a25c39125",
+                "operationId": "637e9934359b7a5892ae696771b2fe9d",
                 "parameters": [
                     {
                         "name": "id",
@@ -91,7 +91,7 @@
                     "Users"
                 ],
                 "summary": "Update a user",
-                "operationId": "f6b0e1f4620d983fb8e81dad4b1e247a",
+                "operationId": "065a737bf6a0bccfa206a7f57ac6a9a7",
                 "parameters": [
                     {
                         "name": "id",
@@ -134,7 +134,7 @@
                     "Users"
                 ],
                 "summary": "Delete a user",
-                "operationId": "8bd774d8140fefe115cfb05a548442db",
+                "operationId": "f7fa0c92ad7e9821f64b17677e759bc5",
                 "parameters": [
                     {
                         "name": "id",
