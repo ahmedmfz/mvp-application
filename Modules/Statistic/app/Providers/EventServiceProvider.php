@@ -1,10 +1,12 @@
 <?php
 
-namespace Modules\User\Providers;
+namespace Modules\Statistic\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Modules\User\Events\UserCreated;
-use Modules\User\Listeners\WelcomeMessageListener;
+use Modules\User\Events\UserUpdated;
+use Modules\User\Events\UserDeleted;
+use Modules\Statistic\Listeners\UpdateDailyStatsListener;
 
 
 class EventServiceProvider extends ServiceProvider
@@ -15,9 +17,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array<string, array<int, string>>
      */
     protected $listen = [
-        UserCreated::class => [
-            WelcomeMessageListener::class,
-        ]
+        UserCreated::class => [UpdateDailyStatsListener::class],
+        UserUpdated::class => [UpdateDailyStatsListener::class],
+        UserDeleted::class => [UpdateDailyStatsListener::class],
     ];
 
     /**

@@ -1,4 +1,5 @@
 {
     "User": true,
-    "Activity": true
+    "Activity": true,
+    "Statistic": true
 }
