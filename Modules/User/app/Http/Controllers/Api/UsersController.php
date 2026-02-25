@@ -7,15 +7,17 @@ use App\Service\HelperResponse;
 use Illuminate\Http\Request;
 use Modules\User\Http\Requests\Api\StoreUserRequest;
 use Modules\User\Http\Requests\Api\UpdateUserRequest;
+use Modules\User\Http\Requests\Api\StoreBulkUserRequest;
 use Modules\User\Models\User;
 use Modules\User\Transformers\UserResource;
 use Modules\User\Services\UserService;
+use Modules\User\Services\BulkUserOnboardingService;
 use OpenApi\Attributes as OA;
 
 
 class UsersController extends Controller
 {
-    public function __construct(public UserService $userService){}
+    public function __construct(public UserService $userService , public BulkUserOnboardingService $bulkUserOnboardingService){}
 
     #[OA\Post(
         path: '/v1/users',
@@ -100,5 +102,56 @@ class UsersController extends Controller
     public function destroy(User $user) {
         $user = $this->userService->destroy($user);
         return HelperResponse::success(new UserResource($user), 'User deleted successfully');
+    }
+
+    #[OA\Post(
+        path: '/v1/users/bulk',
+        tags: ['Users'],
+        summary: 'Create multiple users at once',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                type: 'array',
+                items: new OA\Items(
+                    required: ['name', 'email', 'password'],
+                    properties: [
+                        new OA\Property(property: 'name',     type: 'string', example: 'John Doe'),
+                        new OA\Property(property: 'email',    type: 'string', format: 'email', example: 'john@example.com'),
+                        new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password'),
+                    ]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: 'Created'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ]
+    )]
+    public function storeBulk(StoreBulkUserRequest $request)
+    {
+        $result = $this->bulkUserOnboardingService->startBulk($request->validated()['users']);
+        return HelperResponse::success([
+            'import_id' => $result['import_id'],
+            'batch_id'  => $result['batch_id'],
+        ], 'Bulk onboarding started', 201);
+    }   
+
+
+    //for testing
+    public function createUsersJson()
+    {
+        $users = [];
+
+        for ($i = 1; $i <= 1000; $i++) {
+            $users[] = [
+                'name' => "User {$i}",
+                'email' => "bulkUser{$i}@gmail.com",
+                'password' => 'password123',
+            ];
+        }
+
+        file_put_contents(storage_path('users.json'), json_encode(["users"=>$users], JSON_PRETTY_PRINT));
+
+        return response()->json(['message' => 'users.json created']);
     }
 }

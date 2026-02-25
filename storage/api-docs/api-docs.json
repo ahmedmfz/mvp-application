@@ -154,6 +154,57 @@
                     }
                 }
             }
+        },
+        "/v1/users/bulk": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Create multiple users at once",
+                "operationId": "b2ae63ff27b557cee2b9092b457715eb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "required": [
+                                        "name",
+                                        "email",
+                                        "password"
+                                    ],
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "example": "John Doe"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "format": "email",
+                                            "example": "john@example.com"
+                                        },
+                                        "password": {
+                                            "type": "string",
+                                            "format": "password",
+                                            "example": "password"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
         }
     },
     "tags": [
