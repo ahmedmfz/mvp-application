@@ -1,5 +1,6 @@
 {
     "User": true,
     "Activity": true,
-    "Statistic": true
+    "Statistic": true,
+    "Message": true
 }

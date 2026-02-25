@@ -17,12 +17,11 @@ class LogUserActivityListener implements ShouldQueue
     use InteractsWithQueue;
 
     public function __construct(
-        private readonly ActivityLogger $logger
+        private ActivityLogger $logger
     ) {}
 
     public function handle(object $event): void
     {
-        // Safe logging (string message + context)
         Log::info('Activity listener received event', [
             'event' => get_class($event),
             'user_id' => $event->userId ?? null,
@@ -34,7 +33,7 @@ class LogUserActivityListener implements ShouldQueue
             $event instanceof UserDeleted => ActionTypeEnum::USER_DELETED,
             default => null,
         };
-        \Log::info('actionType', [$actionType]);
+
         if (!$actionType) {
             return;
         }

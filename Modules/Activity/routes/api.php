@@ -3,6 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Activity\Http\Controllers\ActivityController;
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('activities', ActivityController::class)->names('activity');
-});
+// Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
+//     Route::apiResource('activities', ActivityController::class)->names('activity');
+// });

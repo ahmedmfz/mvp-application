@@ -12,7 +12,7 @@ class DailyStatisticsService
     {
         $date = $date ?? now()->toDateString();
 
-        $stat = Statistic::firstOrCreate(
+        Statistic::firstOrCreate(
             ['date' => $date],
             ['total_users_created' => 0, 'total_users_updated' => 0, 'total_users_deleted' => 0]
         );

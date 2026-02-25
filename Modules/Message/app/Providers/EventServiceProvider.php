@@ -1,9 +1,10 @@
 <?php
 
-namespace Modules\User\Providers;
+namespace Modules\Message\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-
+use Modules\User\Events\UserCreated;
+use Modules\Message\Listeners\WelcomeMessageListener;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -12,7 +13,11 @@ class EventServiceProvider extends ServiceProvider
      *
      * @var array<string, array<int, string>>
      */
-    protected $listen = [];
+    protected $listen = [
+        UserCreated::class => [
+            WelcomeMessageListener::class,
+        ]
+    ];
 
     /**
      * Indicates if events should be discovered.

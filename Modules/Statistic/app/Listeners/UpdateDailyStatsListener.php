@@ -17,7 +17,7 @@ class UpdateDailyStatsListener implements ShouldQueue
     use InteractsWithQueue;
 
     public function __construct(
-        private readonly DailyStatisticsService $stats
+        private DailyStatisticsService $stats
     ) {}
 
     public function handle(object $event): void

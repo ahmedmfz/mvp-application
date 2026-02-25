@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('statistics', function (Blueprint $table) {
+        Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->date('date')->unique();
 
-            $table->unsignedBigInteger('total_users_created')->default(0);
-            $table->unsignedBigInteger('total_users_updated')->default(0);
-            $table->unsignedBigInteger('total_users_deleted')->default(0);
+            $table->string('message_type'); // SMS, EMAIL
+            $table->string('status');       // SENT, FAILED, PENDING
+            $table->text('message_content');
+
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
 
             $table->timestamps();
         });
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('statistics');
+        Schema::dropIfExists('messages');
     }
 };
