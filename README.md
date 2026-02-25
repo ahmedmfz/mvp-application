@@ -1,59 +1,233 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# People Management API (Laravel 12)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modular Laravel 12 API for managing users with:
+- **nwidart/laravel-modules** (User · Activity · Message · Statistic modules)
+- **Events & Listeners** (activity logging · welcome messaging · daily statistics)
+- **Centralized exceptions** via `bootstrap/app.php -> withExceptions(...)`
+- **OpenAPI/Swagger** docs
+- **Queued** activity, statistics, messages & bulk imports
 
-## About Laravel
+## Requirements
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.4+
+- MySQL 8+ or PostgreSQL 14+
+- Composer 2+
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Quick Start
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+# 1) Clone
+git clone https://github.com/ahmedmfz/mvp-application.git
+cd mvp-application
 
-## Learning Laravel
+# 2) Install deps
+composer install
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+# 3) Env
+cp .env.example .env
+php artisan key:generate
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# 4) DB & migrations
+# set DB_* in .env first
+php artisan migrate --seed
 
-## Laravel Sponsors
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# 5) Queue (required for activity, statistics, messages & bulk imports)
+php artisan queue:work --queue=bulk,default
 
-### Premium Partners
+# 6) Serve API
+php artisan serve
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Swagger / OpenAPI
+- Visit: `/api/documentation` (Here you can Show and Test Apis)
+- Rebuild docs:
+```bash
+php artisan l5-swagger:generate
+```
 
-## Contributing
+## Environment
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Example `.env` essentials:
+```dotenv
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
 
-## Code of Conduct
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=people_management
+DB_USERNAME=root
+DB_PASSWORD=secret
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+QUEUE_CONNECTION=database
+CACHE_DRIVER=file
+SESSION_DRIVER=file
+```
 
-## Security Vulnerabilities
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Project Structure (high level)
 
-## License
+```
+bootstrap/app.php                        # Laravel 12 app config (exceptions wired here)
+Modules/
+│
+├─ User/                                 # User management + bulk onboarding
+│  ├─ app/
+│  │  ├─ Events/
+│  │  │  ├─ UserCreated.php
+│  │  │  ├─ UserUpdated.php
+│  │  │  └─ UserDeleted.php
+│  │  ├─ Http/
+│  │  │  ├─ Controllers/
+│  │  │  │  └─ Api/
+│  │  │  │     └─ UsersController.php
+│  │  │  └─ Requests/
+│  │  │     └─ Api/
+│  │  │        ├─ StoreUserRequest.php
+│  │  │        ├─ StoreBulkUserRequest.php
+│  │  │        └─ UpdateUserRequest.php
+│  │  ├─ Jobs/
+│  │  │  └─ BulkUsersChunkJob.php        # Queued chunk processor for bulk imports
+│  │  ├─ Models/
+│  │  │  └─ User.php
+│  │  ├─ Providers/
+│  │  │  ├─ UsersServiceProvider.php
+│  │  │  ├─ EventServiceProvider.php
+│  │  │  └─ RouteServiceProvider.php
+│  │  ├─ Services/
+│  │  │  ├─ UserService.php
+│  │  │  └─ BulkUserOnboardingService.php
+│  │  └─ Transformers/
+│  │     └─ UserResource.php
+│  ├─ database/
+│  │  ├─ migrations/
+│  │  │  └─ ..._create_bulk_imports_table.php
+│  │  └─ seeders/
+│  │     └─ UsersDatabaseSeeder.php
+│  └─ routes/
+│     ├─ api/
+│     │  └─ v1.php
+│     └─ web.php
+│
+├─ Activity/                             # Logs user actions via event listeners
+│  ├─ app/
+│  │  ├─ Enums/
+│  │  │  └─ ActionTypeEnum.php
+│  │  ├─ Listeners/
+│  │  │  └─ LogUserActivityListener.php  # Queued; reacts to User events
+│  │  ├─ Models/
+│  │  │  └─ Activity.php
+│  │  ├─ Providers/
+│  │  │  ├─ ActivityServiceProvider.php
+│  │  │  ├─ EventServiceProvider.php
+│  │  │  └─ RouteServiceProvider.php
+│  │  └─ Services/
+│  │     └─ ActivityLogger.php
+│  ├─ database/
+│  │  ├─ migrations/
+│  │  │  └─ ..._create_activities_table.php
+│  │  └─ seeders/
+│  │     └─ ActivityDatabaseSeeder.php
+│  └─ routes/
+│     ├─ api.php
+│     └─ web.php
+│
+├─ Message/                              # Sends welcome messages on user creation
+│  ├─ app/
+│  │  ├─ Enums/
+│  │  │  ├─ MessageStatusEnum.php
+│  │  │  └─ MessageTypeEnum.php
+│  │  ├─ Http/
+│  │  │  └─ Controllers/
+│  │  │     └─ MessageController.php
+│  │  ├─ Listeners/
+│  │  │  └─ WelcomeMessageListener.php   # Queued; fires on UserCreated
+│  │  ├─ Models/
+│  │  │  └─ Message.php
+│  │  ├─ Providers/
+│  │  │  ├─ MessageServiceProvider.php
+│  │  │  ├─ EventServiceProvider.php
+│  │  │  └─ RouteServiceProvider.php
+│  │  └─ Services/
+│  │     └─ MessageService.php
+│  ├─ database/
+│  │  ├─ migrations/
+│  │  │  └─ ..._create_messages_table.php
+│  │  └─ seeders/
+│  │     └─ MessageDatabaseSeeder.php
+│  └─ routes/
+│     ├─ api.php
+│     └─ web.php
+│
+└─ Statistic/                            # Tracks daily aggregated stats
+   ├─ app/
+   │  ├─ Enums/
+   │  │  └─ DailyStatCounter.php
+   │  ├─ Listeners/
+   │  │  └─ UpdateDailyStatsListener.php # Queued; reacts to User events
+   │  ├─ Models/
+   │  │  └─ Statistic.php
+   │  ├─ Providers/
+   │  │  ├─ StatisticServiceProvider.php
+   │  │  ├─ EventServiceProvider.php
+   │  │  └─ RouteServiceProvider.php
+   │  └─ Services/
+   │     └─ DailyStatisticsService.php
+   ├─ database/
+   │  ├─ migrations/
+   │  │  └─ ..._create_statistics_table.php
+   │  └─ seeders/
+   │     └─ StatisticDatabaseSeeder.php
+   └─ routes/
+      ├─ api.php
+      └─ web.php
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Architecture & Decisions
+
+- **Modules (nwidart)** to isolate each domain — User, Activity, Message, Statistic — into independent, self-contained units (models, events, listeners, services, routes).
+- **Service** to keep controllers thin and business logic testable.
+- **Events/Listeners**
+  - `UserCreated` fired after create.
+  - `UserUpdated` fired after update.
+  - `UserDeleted` fired after delete.
+- **Exception handling** in `bootstrap/app.php` using `->withExceptions()`:
+  - JSON for API via `shouldRenderJsonWhen()`
+  - 404 (route/model), 405, 401, 403, 422 unified responses.
+- **OpenAPI** annotations on CRUD endpoints for auto docs.
+- **An `HelperResponse` is used to unify all backend API responses** (success and error) into a consistent JSON shape across the application.
+- **All API FormRequests extend an abstract `BaseApiRequest`** that overrides Laravel’s default validation response shape for consistency across endpoints.
+
+## API Overview
+
+- `POST /api/users` — create  
+- `GET /api/users/{user_id}` — show user
+- `PUT /api/users/{user_id}` — update  
+- `DELETE /api/users/{user_id}` — delete  
+- `POST /api/users/bulk` — bulk create users
+
+
+On **create** — `UserCreated` dispatched:
+- `LogUserActivityListener` — logs the action (Activity module, queued)
+- `WelcomeMessageListener` — sends a welcome message (Message module, queued)
+- `UpdateDailyStatsListener` — increments daily stats (Statistic module, queued)
+
+On **update** — `UserUpdated` dispatched:
+- `LogUserActivityListener` — logs the action (Activity module, queued)
+- `UpdateDailyStatsListener` — updates daily stats (Statistic module, queued)
+
+On **delete** — `UserDeleted` dispatched:
+- `LogUserActivityListener` — logs the action (Activity module, queued)
+- `UpdateDailyStatsListener` — updates daily stats (Statistic module, queued)
+
+
+## Assumptions
+- User IDs are **auto-incrementing integers** (standard Laravel default); UUIDs are used only for `bulk_imports` tracking.
+- **No mail/SMTP** dependency — there are no mailables in this project; messaging is handled by the Message module (DB records).
+- All event listeners (`LogUserActivityListener`, `WelcomeMessageListener`, `UpdateDailyStatsListener`) implement `ShouldQueue` — **a queue worker must be running**.
+- Bulk imports run on a dedicated **`bulk` queue** (`onQueue('bulk')`); ensure a worker is consuming that queue.
+
+
