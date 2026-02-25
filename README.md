@@ -46,7 +46,17 @@ php artisan serve
 php artisan l5-swagger:generate
 ```
 
-## Environment
+### Telescope / Observability
+- **Package**: [`laravel/telescope`](https://github.com/laravel/telescope) `^5.18`
+- **Dashboard**: Visit `/telescope` to inspect in real-time:
+  - HTTP Requests & Responses
+  - Queued Jobs & Batches (including bulk import batches)
+  - Fired Events & Listeners
+  - Database Queries
+  - Exceptions & Logs
+- Docs: [laravel.com/docs/telescope](https://laravel.com/docs/12.x/telescope)
+
+
 
 Example `.env` essentials:
 ```dotenv
