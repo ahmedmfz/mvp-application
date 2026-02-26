@@ -14,6 +14,7 @@ class UserService {
     public function store($data)
     {
         return DB::transaction(function () use ($data) {
+            $data['password'] = bcrypt($data['password']);
             $user = User::create($data);
 
             DB::afterCommit(function () use ($user) {

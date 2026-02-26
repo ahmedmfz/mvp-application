@@ -31,6 +31,7 @@ class UsersController extends Controller
                     new OA\Property(property: 'name',     type: 'string', example: 'John Doe'),
                     new OA\Property(property: 'email',    type: 'string', format: 'email', example: 'john@example.com'),
                     new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password'),
+                    new OA\Property(property: 'type',     type: 'string', enum: ['admin', 'consumer'], example: 'consumer'),
                 ]
             )
         ),

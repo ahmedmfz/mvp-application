@@ -2,14 +2,14 @@
 
 namespace Modules\User\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
-// use Modules\User\Database\Factories\UserFactory;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Model
+class User extends Authenticatable
 {
-    use HasFactory , Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -20,6 +20,7 @@ class User extends Model
         'name',
         'email',
         'password',
+        'type',
     ];
 
     /**
@@ -41,8 +42,29 @@ class User extends Model
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
 
+    /**
+     * Determine whether the user is an admin.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->type === 'admin';
+    }
+
+    /**
+     * Determine whether the user is a consumer.
+     */
+    public function isConsumer(): bool
+    {
+        return $this->type === 'consumer';
+    }
+
+    public function getToken(string $type)
+    {
+        $this->tokens()->delete();
+        return $this->createToken(uniqid(), [$type])->plainTextToken;
+    }
 }

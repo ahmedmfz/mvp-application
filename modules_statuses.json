@@ -2,5 +2,7 @@
     "User": true,
     "Activity": true,
     "Statistic": true,
-    "Message": true
+    "Message": true,
+    "Auth": true,
+    "Package": true
 }

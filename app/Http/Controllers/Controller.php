@@ -13,6 +13,12 @@ use OpenApi\Attributes as OA;
     url: '/api',
     description: 'API Base URL'
 )]
+#[OA\SecurityScheme(
+    securityScheme: 'api_key',
+    type: 'http',
+    scheme: 'bearer',
+    bearerFormat: 'JWT'
+)]
 abstract class Controller
 {
     //
