@@ -337,6 +337,9 @@
                     }
                 },
                 "responses": {
+                    "200": {
+                        "description": "Already subscribed to this package (no change made)"
+                    },
                     "201": {
                         "description": "Subscribed successfully"
                     },

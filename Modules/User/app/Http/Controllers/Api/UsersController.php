@@ -60,6 +60,7 @@ class UsersController extends Controller
     )]
     public function show(User $user)
     {
+        $user->load('activePackage');
         return HelperResponse::success(new UserResource($user));
     }
 
@@ -85,6 +86,7 @@ class UsersController extends Controller
     )]
     public function update(UpdateUserRequest $request, User $user) {
         $user = $this->userService->update($request->validated(), $user);
+        $user->load('activePackage');
         return HelperResponse::success(new UserResource($user), 'User updated successfully');
     }
 

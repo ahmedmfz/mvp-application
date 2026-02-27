@@ -27,4 +27,18 @@ class PackageRepository implements PackageRepositoryInterface
     {
         return Package::find($id);
     }
+
+    public function findOrCreateDefault(): Package
+    {
+        return Package::firstOrCreate(
+            ['is_default' => true],
+            [
+                'name'        => 'Basic',
+                'description' => 'Default free package assigned to all new users.',
+                'price'       => 0.00,
+                'status'      => 'active',
+                'is_default'  => true,
+            ]
+        );
+    }
 }

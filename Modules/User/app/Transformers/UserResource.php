@@ -12,11 +12,21 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
-            'id'        => $this->id,
-            'name'      => $this->name,
-            'email'     => $this->email,
-            // 'current_package'   => $this->package,
+        $package = $this->activePackage->first();
+
+        $data = [
+            'id'              => $this->id,
+            'name'            => $this->name,
+            'email'           => $this->email,
         ];
+
+        if ($this->isConsumer()) {
+            $data['current_package'] = $package ? [
+                'name'  => $package->name,
+                'price' => $package->price,
+            ] : null;
+        }
+
+        return $data;
     }
 }

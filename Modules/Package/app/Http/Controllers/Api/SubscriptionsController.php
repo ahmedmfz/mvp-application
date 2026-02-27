@@ -29,6 +29,7 @@ class SubscriptionsController extends Controller
             )
         ),
         responses: [
+            new OA\Response(response: 200, description: 'Already subscribed to this package (no change made)'),
             new OA\Response(response: 201, description: 'Subscribed successfully'),
             new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(response: 422, description: 'Validation error'),
@@ -36,13 +37,21 @@ class SubscriptionsController extends Controller
     )]
     public function subscribe(SubscribeRequest $request)
     {
-        $subscription = $this->subscriptionService->subscribe(
+        $result = $this->subscriptionService->subscribe(
             userId:    auth()->id(),
             packageId: $request->validated('package_id'),
         );
 
+        if ($result['already_active']) {
+            return HelperResponse::success(
+                new SubscriptionResource($result['subscription']->load('package')),
+                'Already subscribed to this package',
+                200
+            );
+        }
+
         return HelperResponse::success(
-            new SubscriptionResource($subscription->load('package')),
+            new SubscriptionResource($result['subscription']->load('package')),
             'Subscribed successfully',
             201
         );

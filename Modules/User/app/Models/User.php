@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Modules\Package\Models\Package;
+use Modules\Package\Models\UserSubscription;
 
 class User extends Authenticatable
 {
@@ -46,17 +48,11 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Determine whether the user is an admin.
-     */
     public function isAdmin(): bool
     {
         return $this->type === 'admin';
     }
 
-    /**
-     * Determine whether the user is a consumer.
-     */
     public function isConsumer(): bool
     {
         return $this->type === 'consumer';
@@ -66,5 +62,18 @@ class User extends Authenticatable
     {
         $this->tokens()->delete();
         return $this->createToken(uniqid(), [$type])->plainTextToken;
+    }
+
+    public function subscriptions()
+    {
+        return $this->belongsToMany(Package::class , 'user_subscriptions' , 'user_id' , 'package_id');
+    }
+
+    public function activePackage()
+    {
+        return $this->belongsToMany(Package::class, 'user_subscriptions', 'user_id', 'package_id')
+                     ->wherePivot('status', 'active')
+                     ->withPivot(['status', 'started_at'])
+                     ->latest('user_subscriptions.id');
     }
 }

@@ -10,7 +10,7 @@ class SubscriptionRepository implements SubscriptionRepositoryInterface
     public function getActiveSubscription(int $userId): ?UserSubscription
     {
         return UserSubscription::where('user_id', $userId)
-            ->active()
+            ->where('status', 'active')
             ->with('package')
             ->latest()
             ->first();

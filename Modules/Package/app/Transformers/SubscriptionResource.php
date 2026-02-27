@@ -18,7 +18,6 @@ class SubscriptionResource extends JsonResource
                 'id'     => $this->package?->id,
                 'name'   => $this->package?->name,
                 'price'  => $this->package?->price,
-                'status' => $this->package?->status,
             ],
         ];
     }

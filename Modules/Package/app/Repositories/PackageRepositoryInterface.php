@@ -13,4 +13,6 @@ interface PackageRepositoryInterface
     public function delete(Package $package): Package;
 
     public function findById(int $id): ?Package;
+
+    public function findOrCreateDefault(): Package;
 }
