@@ -2,10 +2,17 @@
 
 namespace Modules\Package\Repositories;
 
+
 use Modules\Package\Models\Package;
+
 
 class PackageRepository implements PackageRepositoryInterface
 {
+    public function all()
+    {
+        return Package::get();
+    }
+
     public function create(array $data): Package
     {
         return Package::create($data);
@@ -26,6 +33,11 @@ class PackageRepository implements PackageRepositoryInterface
     public function findById(int $id): ?Package
     {
         return Package::find($id);
+    }
+
+    public function updateDefaultFalse(): void
+    {
+        Package::where('is_default', true)->update(['is_default' => false]);
     }
 
     public function findOrCreateDefault(): Package

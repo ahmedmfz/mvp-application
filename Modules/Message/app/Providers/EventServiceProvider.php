@@ -5,6 +5,7 @@ namespace Modules\Message\Providers;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Modules\User\Events\UserCreated;
 use Modules\Message\Listeners\WelcomeMessageListener;
+use Modules\Message\Listeners\SendWelcomeSmsListener;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -16,6 +17,7 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         UserCreated::class => [
             WelcomeMessageListener::class,
+            SendWelcomeSmsListener::class,
         ]
     ];
 

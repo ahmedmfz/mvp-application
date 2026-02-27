@@ -15,6 +15,7 @@ class PackageResource extends JsonResource
             'description' => $this->description,
             'price'       => $this->price,
             'status'      => $this->status,
+            'is_default'  => $this->is_default,
         ];
     }
 }

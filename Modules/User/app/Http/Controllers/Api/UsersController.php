@@ -5,19 +5,51 @@ namespace Modules\User\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Service\HelperResponse;
 use Illuminate\Http\Request;
+use Modules\Package\Models\Package;
 use Modules\User\Http\Requests\Api\StoreUserRequest;
 use Modules\User\Http\Requests\Api\UpdateUserRequest;
 use Modules\User\Http\Requests\Api\StoreBulkUserRequest;
 use Modules\User\Models\User;
+use Modules\User\Transformers\UserCollection;
 use Modules\User\Transformers\UserResource;
 use Modules\User\Services\UserService;
 use Modules\User\Services\BulkUserOnboardingService;
+use Modules\Package\Services\PackageService;
 use OpenApi\Attributes as OA;
 
 
 class UsersController extends Controller
 {
-    public function __construct(public UserService $userService , public BulkUserOnboardingService $bulkUserOnboardingService){}
+    public function __construct(
+        public UserService $userService, 
+        public BulkUserOnboardingService $bulkUserOnboardingService,
+        public PackageService $packageService
+    ){}
+
+    #[OA\Get(
+        path: '/v1/users',
+        tags: ['Users'],
+        summary: 'List consumers',
+        description: 'Returns a paginated list of consumer users with their current active package.',
+        security: [['api_key' => []]],
+        parameters: [
+            new OA\Parameter(name: 'page',     in: 'query', required: false, schema: new OA\Schema(type: 'integer', example: 1)),
+            new OA\Parameter(name: 'per_page', in: 'query', required: false, schema: new OA\Schema(type: 'integer', example: 15)),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Success'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
+    public function index(Request $request)
+    {
+        $perPage = min((int) $request->query('per_page', 15), 100);
+        $users   = $this->userService->getAll($perPage);
+        UserResource::setDefaultPackage(
+            $this->packageService->getDefaultPackage()
+        );
+        return HelperResponse::success(new UserCollection($users));
+    }
 
     #[OA\Post(
         path: '/v1/users',
@@ -43,6 +75,7 @@ class UsersController extends Controller
     public function store(StoreUserRequest $request)
     {       
         $user = $this->userService->store($request->validated());
+        UserResource::setDefaultPackage($this->packageService->getDefaultPackage());
         return HelperResponse::success(new UserResource($user) , 'User created successfully', 201);
     }
 
@@ -61,6 +94,7 @@ class UsersController extends Controller
     public function show(User $user)
     {
         $user->load('activePackage');
+        UserResource::setDefaultPackage($this->packageService->getDefaultPackage());
         return HelperResponse::success(new UserResource($user));
     }
 
@@ -87,6 +121,7 @@ class UsersController extends Controller
     public function update(UpdateUserRequest $request, User $user) {
         $user = $this->userService->update($request->validated(), $user);
         $user->load('activePackage');
+        UserResource::setDefaultPackage($this->packageService->getDefaultPackage());
         return HelperResponse::success(new UserResource($user), 'User updated successfully');
     }
 

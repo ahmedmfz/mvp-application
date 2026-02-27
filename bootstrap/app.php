@@ -24,7 +24,9 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (Throwable $exception, Request $request) {
-            if (! $request->wantsJson() && ! $request->is('api/*')) {
+            // Return JSON for any API request or client that expects JSON.
+            // Also matches v1/* module routes that aren't under api/* prefix.
+            if (! $request->wantsJson() && ! $request->is('api/*') && ! $request->is('v1/*')) {
                 return null; // let Laravel handle web exceptions normally
             }
 

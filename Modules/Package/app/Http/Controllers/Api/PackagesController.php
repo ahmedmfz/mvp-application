@@ -15,6 +15,23 @@ class PackagesController extends Controller
 {
     public function __construct(public PackageService $packageService) {}
 
+    #[OA\Get(
+        path: '/v1/packages',
+        tags: ['Packages'],
+        summary: 'Get all packages (admin only)',
+        security: [['api_key' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'Success'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Forbidden – admin only'),
+        ]
+    )]
+    public function index()
+    {
+        $packages = $this->packageService->index();
+        return HelperResponse::success(PackageResource::collection($packages));
+    }
+
     #[OA\Post(
         path: '/v1/packages',
         tags: ['Packages'],
@@ -29,6 +46,7 @@ class PackagesController extends Controller
                     new OA\Property(property: 'description', type: 'string',  example: 'Entry level plan'),
                     new OA\Property(property: 'price',       type: 'number',  format: 'float', example: 9.99),
                     new OA\Property(property: 'status',      type: 'string',  enum: ['active', 'inactive'], example: 'active'),
+                    new OA\Property(property: 'is_default',  type: 'boolean', example: false),
                 ]
             )
         ),
@@ -80,6 +98,7 @@ class PackagesController extends Controller
                     new OA\Property(property: 'description', type: 'string'),
                     new OA\Property(property: 'price',       type: 'number', format: 'float'),
                     new OA\Property(property: 'status',      type: 'string', enum: ['active', 'inactive']),
+                    new OA\Property(property: 'is_default',  type: 'boolean', example: false),
                 ]
             )
         ),

@@ -18,6 +18,7 @@ class StorePackageRequest extends BaseApiRequest
             'description' => 'nullable|string',
             'price'       => 'required|numeric|min:0',
             'status'      => 'sometimes|in:active,inactive',
+            'is_default'  => 'sometimes|boolean',
         ];
     }
 }

@@ -18,6 +18,7 @@ class UpdatePackageRequest extends BaseApiRequest
             'description' => 'nullable|string',
             'price'       => 'sometimes|numeric|min:0',
             'status'      => 'sometimes|in:active,inactive',
+            'is_default'  => 'sometimes|boolean',
         ];
     }
 }
